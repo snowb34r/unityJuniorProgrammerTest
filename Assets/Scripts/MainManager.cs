@@ -9,8 +9,10 @@ public class MainManager : MonoBehaviour
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
+    private MenuManager menuManager;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -22,6 +24,7 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        menuManager = GameObject.Find("MenuManager").GetComponent<MenuManager>();
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -36,6 +39,7 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+        BestScoreText.text = $"Best Score : {menuManager.BestName} : {menuManager.HighScore}";
     }
 
     private void Update()
@@ -66,6 +70,17 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+        if (menuManager.HighScore <= m_Points)
+        {
+            menuManager.HighScore = m_Points;
+            menuManager.BestName = menuManager.PlayerName;
+        }
+        BestScoreText.text = $"Best Score : {menuManager.BestName} : {menuManager.HighScore}";
+    }
+    public void ReturnToMenu()
+    {
+        Debug.Log("Score on returning to Menu: " + menuManager.HighScore);
+        SceneManager.LoadScene(0);
     }
 
     public void GameOver()
